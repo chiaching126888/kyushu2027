@@ -1,0 +1,693 @@
+﻿<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fff7ed">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="九州冬日旅">
+<link rel="manifest" href="data:application/manifest+json,{%22name%22:%22九州%202027%20冬日自駕旅%22,%22short_name%22:%22九州冬日旅%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23fffaf5%22,%22theme_color%22:%22%23fff7ed%22,%22lang%22:%22zh-Hant%22}">
+<title>九州 7 天 6 夜｜2027 冬日自駕旅 App</title>
+<style>
+:root {
+  --bg: #fffaf5; --paper: #ffffff; --ink: #463a35; --muted: #8b7770;
+  --accent: #d98272; --accent2: #eabf87; --green: #6b8e23;
+  --line: #f0dfd5; --shadow: 0 8px 24px rgba(120,80,60,.08);
+  --warning-bg: #fff1f0; --warning-border: #ffa39e; --warning-text: #cf1322;
+  --card-bg: #ffffff; --badge-bg: #d98272; --badge-text: #ffffff;
+}
+
+[data-theme="dark"] {
+  --bg: #121212; --paper: #1e1e1e; --ink: #e0e0e0; --muted: #a0a0a0;
+  --accent: #f09886; --accent2: #d4a359; --green: #82a35d;
+  --line: #2c2c2c; --shadow: 0 8px 24px rgba(0,0,0,.5);
+  --warning-bg: #2a1215; --warning-border: #5c1d24; --warning-text: #ff7875;
+  --card-bg: #1e1e1e; --badge-bg: #f09886; --badge-text: #121212;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif; line-height: 1.6; padding-bottom: 75px; transition: background 0.3s, color 0.3s; }
+
+/* Top Header */
+header { padding: 24px 16px 16px; text-align: center; background: linear-gradient(160deg, var(--paper), var(--bg)); border-bottom: 1px solid var(--line); position: relative; }
+.header-top { display: flex; justify: space-between; align-items: center; max-width: 800px; margin: 0 auto 10px; }
+.eyebrow { font-size: 0.8rem; color: var(--accent); font-weight: 700; letter-spacing: .1em; }
+h1 { margin: 4px 0; font-size: 1.6rem; line-height: 1.2; }
+.subtitle { font-size: 0.85rem; color: var(--muted); }
+
+/* Control Buttons & Search */
+.controls { display: flex; gap: 8px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+.btn-icon { background: var(--paper); border: 1px solid var(--line); color: var(--ink); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+.search-box { width: 100%; max-width: 400px; margin: 10px auto 0; position: relative; }
+.search-box input { width: 100%; padding: 8px 14px 8px 36px; border-radius: 20px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); font-size: 0.9rem; outline: none; }
+.search-box::before { content: "🔍"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; opacity: 0.6; }
+
+/* Layout & Tabs */
+.wrap { width: min(800px, 94%); margin: 16px auto; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Day Card & Accordion */
+.day-card { background: var(--card-bg); border: 1px solid var(--line); border-radius: 16px; margin-bottom: 16px; box-shadow: var(--shadow); overflow: hidden; }
+summary { padding: 14px 16px; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; background: linear-gradient(90deg, var(--paper), var(--bg)); }
+summary::-webkit-details-marker { display: none; }
+.day-title-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.day-badge { background: var(--badge-bg); color: var(--badge-text); border-radius: 12px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; }
+.arrow-icon { transition: transform 0.2s; font-size: 0.8rem; color: var(--muted); }
+details[open] .arrow-icon { transform: rotate(180deg); }
+
+/* Internal Card Components */
+.card-body { padding: 14px 16px; }
+.route-info { display: flex; gap: 12px; background: var(--bg); padding: 8px 12px; border-radius: 8px; font-size: 0.82rem; margin-bottom: 12px; color: var(--muted); border: 1px dashed var(--line); flex-wrap: wrap; }
+.warning-box { background: var(--warning-bg); border: 1px solid var(--warning-border); color: var(--warning-text); padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 12px; display: flex; gap: 8px; align-items: flex-start; }
+.weather-widget { display: flex; align-items: center; justify-content: space-between; background: var(--bg); padding: 8px 14px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 14px; }
+
+/* Spot List Items */
+.spot-item { display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.spot-item:last-child { border-bottom: none; }
+.spot-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.spot-title { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.95rem; }
+.spot-title.completed span { text-decoration: line-through; opacity: 0.5; }
+.spot-actions { display: flex; gap: 6px; }
+.btn-nav { text-decoration: none; background: #4285F4; color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
+.btn-fav { background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: 0 4px; opacity: 0.4; }
+.btn-fav.active { opacity: 1; }
+.spot-img { width: 100%; height: 160px; object-fit: cover; border-radius: 10px; margin-top: 4px; }
+
+/* Hotel Card */
+.hotel-card { background: var(--paper); border: 1px solid var(--accent2); border-radius: 12px; padding: 12px 14px; margin-top: 12px; font-size: 0.88rem; }
+.hotel-card h4 { margin: 0 0 6px 0; color: var(--accent); font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
+
+/* Bottom Nav Bar */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--paper); border-top: 1px solid var(--line); display: flex; justify-content: space-around; align-items: center; z-index: 100; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); }
+.nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--muted); font-size: 0.72rem; gap: 2px; cursor: pointer; width: 25%; }
+.nav-item.active { color: var(--accent); font-weight: bold; }
+.nav-item div { font-size: 1.2rem; }
+
+/* iOS PWA Install Modal */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+.modal-content { background: var(--paper); padding: 20px; border-radius: 16px; max-width: 400px; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <span class="eyebrow">KYUSHU 2027 WINTER</span>
+    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn">🌙 夜間模式</button>
+  </div>
+  <h1>九州 7 天 6 夜自駕旅</h1>
+  <div class="subtitle">2027/2/9（二）～ 2/15（一）｜自駕路況與全功能導航 App</div>
+  
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜尋景點、餐廳、備註或行程..." oninput="filterItinerary()">
+  </div>
+
+  <div class="controls">
+    <button class="btn-icon" id="pwaInstallBtn" style="display:none;" onclick="installPWA()">📲 安裝 App 到手機</button>
+    <button class="btn-icon" onclick="showIOSPrompt()">🍎 iPhone 安裝說明</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- TAB 1: 每日行程 -->
+  <section id="tab-itinerary" class="tab-content active">
+    
+    <!-- DAY 1 -->
+    <div class="day-card" data-day="1">
+      <details open>
+        <summary>
+          <div class="day-title-group">
+            <span class="day-badge">DAY 1</span>
+            <span>2/9（二）福岡・博多老街與運河城</span>
+          </div>
+          <span class="arrow-icon">▼</span>
+        </summary>
+        <div class="card-body">
+          <div class="route-info">
+            <span>🚗 路線：福岡機場 ➔ The358 SORA ➔ 櫛田神社 ➔ 博多運河城</span>
+            <span>📍 預估里程：約 25 km</span>
+          </div>
+          <div class="weather-widget">
+            <span>🌡️ 福岡預估氣溫：6°C - 11°C</span>
+            <span>☁️ 陰時多雲（降雨率 20%）</span>
+          </div>
+          
+          <div class="spot-item" data-id="d1-1">
+            <div class="spot-header">
+              <div class="spot-title" id="title-d1-1">
+                <input type="checkbox" onchange="toggleCheck('d1-1')" id="check-d1-1">
+                <span>10:00 抵達福岡機場 & 取車登記</span>
+              </div>
+              <div class="spot-actions">
+                <button class="btn-fav" onclick="toggleFav('d1-1')" id="fav-d1-1">♥</button>
+                <a class="btn-nav" href="https://www.google.com/maps/search/?api=1&query=Fukuoka+Airport" target="_blank">🗺️ 導航</a>
+              </div>
+            </div>
+            <div style="font-size:0.85rem; color:var(--muted); padding-left:24px;">
+              檢查胎紋與雪胎安裝，確認加油手冊及 ETC 卡後開車前往飯店。
+            </div>
+          </div>
+
+          <div class="spot-item" data-id="d1-2">
+            <div class="spot-header">
+              <div class="spot-title" id="title-d1-2">
+                <input type="checkbox" onchange="toggleCheck('d1-2')" id="check-d1-2">
+                <span>14:00 櫛田神社 & 博多町家故鄉館</span>
+              </div>
+              <div class="spot-actions">
+                <button class="btn-fav" onclick="toggleFav('d1-2')" id="fav-d1-2">♥</button>
+                <a class="btn-nav" href="https://www.google.com/maps/search/?api=1&query=Kushida+Shrine+Fukuoka" target="_blank">🗺️ 導航</a>
+              </div>
+            </div>
+            <img class="spot-img" src="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?auto=format&fit=crop&w=600&q=80" alt="櫛田神社" loading="lazy">
+          </div>
+
+          <div class="hotel-card">
+            <h4>🏨 每日住宿：The358 SORA</h4>
+            <div>福岡縣福岡市東區香椎照葉 6-6-6｜提供特約停車場</div>
+            <a class="btn-nav" style="margin-top:6px; display:inline-block;" href="https://www.google.com/maps/search/?api=1&query=The358+SORA" target="_blank">📍 開啟地圖導航</a>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="day-card" data-day="2">
+      <details>
+        <summary>
+          <div class="day-title-group">
+            <span class="day-badge">DAY 2</span>
+            <span>2/10（三）門司港・下關・小倉</span>
+          </div>
+          <span class="arrow-icon">▼</span>
+        </summary>
+        <div class="card-body">
+          <div class="route-info">
+            <span>🚗 路線：福岡 ➔ 門司港懷舊區 ➔ 下關唐戶 ➔ 小倉城 ➔ 福岡</span>
+            <span>📍 預估里程：約 185 km</span>
+          </div>
+          <div class="warning-box">
+            <span>⚠️</span>
+            <div><b>冬季安全警示：</b>關門大橋強風特報，沿海風大體感溫度低，請備妥防風保暖大衣及帽子。</div>
+          </div>
+          <div class="weather-widget">
+            <span>🌡️ 北九州預估氣溫：4°C - 9°C</span>
+            <span>🌊 沿海強風／晴時多雲</span>
+          </div>
+
+          <div class="spot-item" data-id="d2-1">
+            <div class="spot-header">
+              <div class="spot-title" id="title-d2-1">
+                <input type="checkbox" onchange="toggleCheck('d2-1')" id="check-d2-1">
+                <span>09:30 門司港懷舊區 & 藍翼橋</span>
+              </div>
+              <div class="spot-actions">
+                <button class="btn-fav" onclick="toggleFav('d2-1')" id="fav-d2-1">♥</button>
+                <a class="btn-nav" href="https://www.google.com/maps/search/?api=1&query=Mojiko+Retro" target="_blank">🗺️ 導航</a>
+              </div>
+            </div>
+            <img class="spot-img" src="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80" alt="門司港" loading="lazy">
+          </div>
+
+          <div class="spot-item" data-id="d2-2">
+            <div class="spot-header">
+              <div class="spot-title" id="title-d2-2">
+                <input type="checkbox" onchange="toggleCheck('d2-2')" id="check-d2-2">
+                <span>16:05 小倉城參觀</span>
+              </div>
+              <div class="spot-actions">
+                <button class="btn-fav" onclick="toggleFav('d2-2')" id="fav-d2-2">♥</button>
+                <a class="btn-nav" href="https://www.google.com/maps/search/?api=1&query=Kokura+Castle" target="_blank">🗺️ 導航</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="hotel-card">
+            <h4>🏨 每日住宿：The358 SORA（連住第 2 晚）</h4>
+            <div>返回福岡市區住宿，整理明日前往阿蘇之行李。</div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- DAY 3 -->
+    <div class="day-card" data-day="3">
+      <details>
+        <summary>
+          <div class="day-title-group">
+            <span class="day-badge">DAY 3</span>
+            <span>2/11（四）太宰府・前往阿蘇山區</span>
+          </div>
+          <span class="arrow-icon">▼</span>
+        </summary>
+        <div class="card-body">
+          <div class="route-info">
+            <span>🚗 路線：福岡 ➔ 太宰府天滿宮 ➔ 高速公路 ➔ 阿蘇龜之井</span>
+            <span>📍 預估里程：約 135 km</span>
+          </div>
+          <div class="warning-box">
+            <span>🚨</span>
+            <div><b>冬季結冰警示：</b>進入阿蘇高海拔山區，公路易有早晚霜凍或路面結冰，須極力避免急煞並確保已安裝雪胎。</div>
+          </div>
+
+          <div class="spot-item" data-id="d3-1">
+            <div class="spot-header">
+              <div class="spot-title" id="title-d3-1">
+                <input type="checkbox" onchange="toggleCheck('d3-1')" id="check-d3-1">
+                <span>09:00 太宰府天滿宮參拜與參道散步</span>
+              </div>
+              <div class="spot-actions">
+                <button class="btn-fav" onclick="toggleFav('d3-1')" id="fav-d3-1">♥</button>
+                <a class="btn-nav" href="https://www.google.com/maps/search/?api=1&query=Dazaifu+Tenmangu" target="_blank">🗺️ 導航</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="hotel-card">
+            <h4>🏨 每日住宿：阿蘇龜之井飯店 KAMENOI HOTEL ASO</h4>
+            <div>熊本縣阿蘇市一之宮町宮地 5936｜晚餐於飯店內享用</div>
+            <a class="btn-nav" style="margin-top:6px; display:inline-block;" href="https://www.google.com/maps/search/?api=1&query=Kamenoi+Hotel+Aso" target="_blank">📍 開啟地圖導航</a>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- DAY 4 -->
+    <div class="day-card" data-day="4">
+      <details>
+        <summary>
+          <div class="day-title-group">
+            <span class="day-badge">DAY 4</span>
+            <span>2/12（五）阿蘇火山・草千里・大觀峰</span>
+          </div>
+          <span class="arrow-icon">▼</span>
+        </summary>
+        <div class="card-body">
+          <div class="route-info">
+            <span>🚗 路線：阿蘇神社 ➔ 草千里 ➔ 中岳火口/博物館 ➔ 大觀峰</span>
+            <span>📍 預估里程：約 65 km</span>
+          </div>
+          <div class="warning-box">
+            <span>⚠️</span>
+            <div><b>積雪與管制警示：</b>草千里地面積雪泥濘請小心滑倒；中岳火口實施氣體管制時，自動啟動「阿蘇火山博物館」備案。</div>
+          </div>
+
+          <div class="spot-item" data-id="d4-1">
+            <div class="spot-header">
+              <div class="spot-title" id="title-d4-1">
+                <input type="checkbox" onchange="toggleCheck('d4-1')" id="check-d4-1">
+                <span>10:25 草千里之濱雪景攝影</span>
+              </div>
+              <div class="spot-actions">
+                <button class="btn-fav" onclick="toggleFav('d4-1')" id="fav-d4-1">♥</button>
+                <a class="btn-nav" href="https://www.google.com/maps/search/?api=1&query=Kusasenri" target="_blank">🗺️ 導航</a>
+              </div>
+            </div>
+            <img class="spot-img" src="https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=600&q=80" alt="草千里" loading="lazy">
+          </div>
+
+          <div class="hotel-card">
+            <h4>🏨 每日住宿：阿蘇龜之井飯店 KAMENOI HOTEL ASO（連住第 2 晚）</h4>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- DAY 5 -->
+    <div class="day-card" data-day="5">
+      <details>
+        <summary>
+          <div class="day-title-group">
+            <span class="day-badge">DAY 5</span>
+            <span>2/13（六）高千穗峽・前往熊本</span>
+          </div>
+          <span class="arrow-icon">▼</span>
+        </summary>
+        <div class="card-body">
+          <div class="route-info">
+            <span>🚗 路線：阿蘇 ➔ 高千穗峽 ➔ 高千穗神社 ➔ OMO5 熊本</span>
+            <span>📍 預估里程：約 120 km</span>
+          </div>
+          <div class="warning-box">
+            <span>🚨</span>
+            <div><b>山區連續急彎警示：</b>國道與高千穗峽谷道路狹窄，若遇路面結冰請打低速檔並保持倍數車距。</div>
+          </div>
+
+          <div class="spot-item" data-id="d5-1">
+            <div class="spot-header">
+              <div class="spot-title" id="title-d5-1">
+                <input type="checkbox" onchange="toggleCheck('d5-1')" id="check-d5-1">
+                <span>10:35 高千穗峽 & 真名井瀑布</span>
+              </div>
+              <div class="spot-actions">
+                <button class="btn-fav" onclick="toggleFav('d5-1')" id="fav-d5-1">♥</button>
+                <a class="btn-nav" href="https://www.google.com/maps/search/?api=1&query=Takachiho+Gorge" target="_blank">🗺️ 導航</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="hotel-card">
+            <h4>🏨 每日住宿：OMO5 熊本 by 星野集團</h4>
+            <div>熊本縣熊本市中央區手取本町 5-1｜合作停車場：NPC24H 熊本縣營停車場</div>
+            <a class="btn-nav" style="margin-top:6px; display:inline-block;" href="https://www.google.com/maps/search/?api=1&query=OMO5+Kumamoto" target="_blank">📍 開啟地圖導航</a>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- DAY 6 -->
+    <div class="day-card" data-day="6">
+      <details>
+        <summary>
+          <div class="day-title-group">
+            <span class="day-badge">DAY 6</span>
+            <span>2/14（日）熊本城・水前寺成趣園・市區購物</span>
+          </div>
+          <span class="arrow-icon">▼</span>
+        </summary>
+        <div class="card-body">
+          <div class="route-info">
+            <span>🚗 路線：熊本城 ➔ 櫻之馬場城彩苑 ➔ 水前寺成趣園 ➔ 上下通</span>
+            <span>📍 預估里程：約 15 km（市電車位不動）</span>
+          </div>
+
+          <div class="spot-item" data-id="d6-1">
+            <div class="spot-header">
+              <div class="spot-title" id="title-d6-1">
+                <input type="checkbox" onchange="toggleCheck('d6-1')" id="check-d6-1">
+                <span>09:15 熊本城天守閣特別見學</span>
+              </div>
+              <div class="spot-actions">
+                <button class="btn-fav" onclick="toggleFav('d6-1')" id="fav-d6-1">♥</button>
+                <a class="btn-nav" href="https://www.google.com/maps/search/?api=1&query=Kumamoto+Castle" target="_blank">🗺️ 導航</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="hotel-card">
+            <h4>🏨 每日住宿：OMO5 熊本 by 星野集團（連住第 2 晚）</h4>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- DAY 7 -->
+    <div class="day-card" data-day="7">
+      <details>
+        <summary>
+          <div class="day-title-group">
+            <span class="day-badge">DAY 7</span>
+            <span>2/15（一）熊本市區購物・前往機場返台</span>
+          </div>
+          <span class="arrow-icon">▼</span>
+        </summary>
+        <div class="card-body">
+          <div class="route-info">
+            <span>🚗 路線：OMO5 熊本 ➔ 熊本市區購物 ➔ 還車加油站 ➔ 熊本機場</span>
+            <span>📍 預估里程：約 20 km</span>
+          </div>
+
+          <div class="spot-item" data-id="d7-1">
+            <div class="spot-header">
+              <div class="spot-title" id="title-d7-1">
+                <input type="checkbox" onchange="toggleCheck('d7-1')" id="check-d7-1">
+                <span>15:00 熊本機場周邊門市滿油還車</span>
+              </div>
+              <div class="spot-actions">
+                <button class="btn-fav" onclick="toggleFav('d7-1')" id="fav-d7-1">♥</button>
+                <a class="btn-nav" href="https://www.google.com/maps/search/?api=1&query=Kumamoto+Airport" target="_blank">🗺️ 導航</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+  </section>
+
+  <!-- TAB 2: 地圖路線 -->
+  <section id="tab-map" class="tab-content">
+    <div class="day-card" style="padding: 16px;">
+      <h3>🗺️ 九州自駕路線與總里程估算</h3>
+      <p style="font-size:0.88rem; color:var(--muted);">本行程總行駛里程約 <b>545 km</b>，行經福岡、北九州、阿蘇火山區、高千穗峽谷與熊本市區。</p>
+      
+      <div style="margin-top: 12px; font-size:0.88rem;">
+        <b>📍 核心景點 Google Maps 一鍵導航：</b>
+        <ul style="padding-left:20px; line-height: 2;">
+          <li><a href="https://www.google.com/maps/dir/Fukuoka+Airport/The358+SORA" target="_blank">Day 1：福岡機場 ➔ The358 SORA</a></li>
+          <li><a href="https://www.google.com/maps/dir/The358+SORA/Mojiko+Retro/Kokura+Castle" target="_blank">Day 2：門司港懷舊區 ➔ 小倉城</a></li>
+          <li><a href="https://www.google.com/maps/dir/Dazaifu+Tenmangu/Kamenoi+Hotel+Aso" target="_blank">Day 3：太宰府天滿宮 ➔ 阿蘇龜之井</a></li>
+          <li><a href="https://www.google.com/maps/dir/Kusasenri/Takachiho+Gorge" target="_blank">Day 4-5：草千里 ➔ 高千穗峽</a></li>
+          <li><a href="https://www.google.com/maps/dir/OMO5+Kumamoto/Kumamoto+Castle/Kumamoto+Airport" target="_blank">Day 6-7：熊本城 ➔ 熊本機場</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 3: 住宿卡片 -->
+  <section id="tab-hotels" class="tab-content">
+    <div class="hotel-card" style="margin-bottom:16px;">
+      <h3>🏨 Day 1～2 福岡住宿</h3>
+      <h4>The358 SORA</h4>
+      <p><b>地址：</b>福岡縣福岡市東區香椎照葉 6-6-6</p>
+      <p><b>備註：</b>取代原華盛頓飯店，提供優質停車場與現代化溫泉設施。</p>
+      <a class="btn-nav" href="https://www.google.com/maps/search/?api=1&query=The358+SORA" target="_blank">🗺️ 地圖導航</a>
+    </div>
+
+    <div class="hotel-card" style="margin-bottom:16px;">
+      <h3>🏨 Day 3～4 阿蘇住宿</h3>
+      <h4>阿蘇龜之井飯店 (KAMENOI HOTEL ASO)</h4>
+      <p><b>地址：</b>熊本縣阿蘇市一之宮町宮地 5936</p>
+      <p><b>備註：</b>連住 2 晚，山區請留意夜間路面結冰，一律建議於飯店內享用晚餐。</p>
+      <a class="btn-nav" href="https://www.google.com/maps/search/?api=1&query=Kamenoi+Hotel+Aso" target="_blank">🗺️ 地圖導航</a>
+    </div>
+
+    <div class="hotel-card" style="margin-bottom:16px;">
+      <h3>🏨 Day 5～6 熊本住宿</h3>
+      <h4>OMO5 熊本 by 星野集團</h4>
+      <p><b>地址：</b>熊本縣熊本市中央區手取本町 5-1</p>
+      <p><b>備註：</b>連住 2 晚，市中心位置，停車請利用特約 NPC24H 熊本縣營停車場。</p>
+      <a class="btn-nav" href="https://www.google.com/maps/search/?api=1&query=OMO5+Kumamoto" target="_blank">🗺️ 地圖導航</a>
+    </div>
+  </section>
+
+  <!-- TAB 4: 行李與清單 -->
+  <section id="tab-packing" class="tab-content">
+    <div class="day-card" style="padding:16px;">
+      <h3>🧳 冬季自駕行李整理清單</h3>
+      <div id="packingList">
+        <!-- Persistent Packing List -->
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- 固定底部導航列 -->
+<nav class="bottom-nav">
+  <div class="nav-item active" onclick="switchTab('tab-itinerary', this)">
+    <div>📅</div>今日行程
+  </div>
+  <div class="nav-item" onclick="switchTab('tab-map', this)">
+    <div>🗺️</div>地圖導航
+  </div>
+  <div class="nav-item" onclick="switchTab('tab-hotels', this)">
+    <div>🏨</div>住宿總覽
+  </div>
+  <div class="nav-item" onclick="switchTab('tab-packing', this)">
+    <div>🧳</div>行李準備
+  </div>
+</nav>
+
+<!-- iOS 安裝提示 Modal -->
+<div class="modal" id="iosModal" onclick="this.style.display='none'">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <h3>🍎 iPhone / iPad 安裝說明</h3>
+    <p style="font-size:0.88rem; color:var(--muted); text-align:left;">
+      1. 請使用 <b>Safari 瀏覽器</b> 開啟本頁面。<br>
+      2. 點擊下方工具列的 <b>「分享」按鈕 (正方形帶向上箭頭)</b>。<br>
+      3. 向下滑動並選擇 <b>「加入主畫面」 (Add to Home Screen)</b>。<br>
+      4. 即可像原生 App 一樣離線快速開啟！
+    </p>
+    <button class="btn-icon" style="margin-top:10px;" onclick="document.getElementById('iosModal').style.display='none'">我知道了</button>
+  </div>
+</div>
+
+<script>
+// --- 1. Dynamic Service Worker Registration via Blob (Offline Support) ---
+const swCode = `
+  const CACHE_NAME = 'kyushu-2027-v1';
+  self.addEventListener('install', e => {
+    e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(['./'])));
+  });
+  self.addEventListener('fetch', e => {
+    e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+  });
+`;
+const blob = new Blob([swCode], { type: 'application/javascript' });
+const swUrl = URL.createObjectURL(blob);
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register(swUrl).catch(err => console.log('SW Reg Error:', err));
+}
+
+// --- 2. PWA Install Prompt (Android/Chrome) ---
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('pwaInstallBtn').style.display = 'inline-flex';
+});
+
+async function installPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') {
+    document.getElementById('pwaInstallBtn').style.display = 'none';
+  }
+  deferredPrompt = null;
+}
+
+function showIOSPrompt() {
+  document.getElementById('iosModal').style.display = 'flex';
+}
+
+// --- 3. Tab Switching Logic ---
+function switchTab(tabId, el) {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  el.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// --- 4. Dark / Light Mode Toggle ---
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const target = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', target);
+  document.getElementById('themeBtn').innerText = target === 'dark' ? '☀️ 日間模式' : '🌙 夜間模式';
+  localStorage.setItem('kyushu_theme', target);
+}
+
+// Restore saved theme
+if (localStorage.getItem('kyushu_theme') === 'dark') {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  document.getElementById('themeBtn').innerText = '☀️ 日間模式';
+}
+
+// --- 5. Interactive Checkbox & Favorites with localStorage Persistence ---
+function toggleCheck(id) {
+  const cb = document.getElementById(`check-${id}`);
+  const title = document.getElementById(`title-${id}`);
+  if (cb.checked) {
+    title.classList.add('completed');
+  } else {
+    title.classList.remove('completed');
+  }
+  saveState();
+}
+
+function toggleFav(id) {
+  const btn = document.getElementById(`fav-${id}`);
+  btn.classList.toggle('active');
+  btn.style.color = btn.classList.contains('active') ? '#e63946' : 'inherit';
+  saveState();
+}
+
+function saveState() {
+  const checkedState = {};
+  const favState = {};
+  document.querySelectorAll('.spot-item').forEach(item => {
+    const id = item.dataset.id;
+    const cb = document.getElementById(`check-${id}`);
+    const fav = document.getElementById(`fav-${id}`);
+    if (cb) checkedState[id] = cb.checked;
+    if (fav) favState[id] = fav.classList.contains('active');
+  });
+  localStorage.setItem('kyushu_checked', JSON.stringify(checkedState));
+  localStorage.setItem('kyushu_favs', JSON.stringify(favState));
+}
+
+function restoreState() {
+  const checkedState = JSON.parse(localStorage.getItem('kyushu_checked') || '{}');
+  const favState = JSON.parse(localStorage.getItem('kyushu_favs') || '{}');
+
+  Object.keys(checkedState).forEach(id => {
+    const cb = document.getElementById(`check-${id}`);
+    const title = document.getElementById(`title-${id}`);
+    if (cb && checkedState[id]) {
+      cb.checked = true;
+      if (title) title.classList.add('completed');
+    }
+  });
+
+  Object.keys(favState).forEach(id => {
+    const btn = document.getElementById(`fav-${id}`);
+    if (btn && favState[id]) {
+      btn.classList.add('active');
+      btn.style.color = '#e63946';
+    }
+  });
+}
+
+// --- 6. Live Itinerary Search Filter ---
+function filterItinerary() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.day-card').forEach(card => {
+    let dayHasMatch = false;
+    card.querySelectorAll('.spot-item').forEach(spot => {
+      const text = spot.innerText.toLowerCase();
+      if (text.includes(query)) {
+        spot.style.display = 'flex';
+        dayHasMatch = true;
+      } else {
+        spot.style.display = 'none';
+      }
+    });
+    if (dayHasMatch || query === '') {
+      card.style.display = 'block';
+      if (query !== '') card.querySelector('details').open = true;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// --- 7. Persistent Packing List Renderer ---
+const packingItems = [
+  "護照正本 & 國際駕照 + 台灣駕照", "雪胎/雪鏈租賃確認單", "ETC 卡 & 保險單據",
+  "保暖發熱衣 & 厚羽絨外衣", "防滑雪靴 / 冰爪", "防風手套 & 圍巾",
+  "車用手機支架 & 車充", "行動電源 & 隨身 Wi-Fi/SIM 卡"
+];
+
+function renderPackingList() {
+  const container = document.getElementById('packingList');
+  const savedPacking = JSON.parse(localStorage.getItem('kyushu_packing') || '{}');
+  
+  container.innerHTML = packingItems.map((item, idx) => `
+    <div style="display:flex; align-items:center; gap:8px; margin: 8px 0; font-size:0.9rem;">
+      <input type="checkbox" id="pack-${idx}" ${savedPacking[idx] ? 'checked' : ''} onchange="savePacking(${idx})">
+      <label for="pack-${idx}">${item}</label>
+    </div>
+  `).join('');
+}
+
+function savePacking(idx) {
+  const savedPacking = JSON.parse(localStorage.getItem('kyushu_packing') || '{}');
+  savedPacking[idx] = document.getElementById(`pack-${idx}`).checked;
+  localStorage.setItem('kyushu_packing', JSON.stringify(savedPacking));
+}
+
+// Initialize application states
+document.addEventListener('DOMContentLoaded', () => {
+  restoreState();
+  renderPackingList();
+});
+</script>
+</body>
+</html>
